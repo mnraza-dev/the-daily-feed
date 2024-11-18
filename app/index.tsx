@@ -1,15 +1,26 @@
-import { Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { useRouter } from "expo-router";
 
-export default function Index() {
+const Page = () => {
+  const router = useRouter();
+
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+    <View style={styles.container}>
+      <Text>Welcome Page</Text>
+      <TouchableOpacity onPress={() => router.replace("/(tabs)")}>
+        <Text>Go to Home Screen</Text>
+      </TouchableOpacity>
     </View>
   );
-}
+};
+
+export default Page;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
