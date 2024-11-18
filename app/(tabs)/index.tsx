@@ -7,6 +7,7 @@ import SearchBar from '@/components/Searchbar'
 import { NewsDataType } from '@/types'
 import BreakingNews from '@/components/BreakingNews'
 import Animated, { useAnimatedRef, useSharedValue } from 'react-native-reanimated'
+import Categories from '@/components/Categories'
 
 
 type Props = {}
@@ -43,8 +44,10 @@ const Page = (props: Props) => {
       <Header />
       <SearchBar />
       {
-        loading ? (<ActivityIndicator />) : (<BreakingNews newsList={breakingNews} />)
+        loading ? (<ActivityIndicator size={'large'} />) :
+         (<BreakingNews newsList={breakingNews} />)
       }
+      <Categories />
     </View >
   )
 }

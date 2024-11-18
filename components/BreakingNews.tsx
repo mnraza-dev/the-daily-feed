@@ -16,7 +16,6 @@ const BreakingNews = ({ newsList }: Props) => {
     const scrollX = useSharedValue(0);
 
     const ref = useAnimatedRef<Animated.FlatList<NewsDataType>>();
-
     // Handle viewable items
     const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
         if (viewableItems.length > 0 && viewableItems[0].index !== null) {
@@ -72,8 +71,8 @@ export default BreakingNews;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: Colors.white,
+
+        // backgroundColor: Colors.white,
     },
     title: {
         fontSize: 24,
