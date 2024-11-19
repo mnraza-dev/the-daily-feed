@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -14,6 +14,7 @@ import { NewsDataType } from '@/types';
 import { Colors } from '@/constants/Colors';
 import Loading from './Loading';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = {
     newsList: NewsDataType[];
@@ -23,6 +24,54 @@ const { width } = Dimensions.get('screen');
 
 const NewsList = ({ newsList }: Props) => {
     const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
+    const [bookmark, setBookmark] = useState(false);
+    const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
+    const [bookmarks, setBookmarks] = useState<string[]>([]);
+
+    // Load bookmarks from AsyncStorage when the app starts
+    useEffect(() => {
+        const loadBookmarks = async () => {
+            try {
+                const storedBookmarks = await AsyncStorage.getItem('bookmark');
+                setBookmarks(storedBookmarks ? JSON.parse(storedBookmarks) : []);
+            } catch (error) {
+                console.error('Failed to load bookmarks:', error);
+            }
+        };
+        loadBookmarks();
+    }, []);
+
+    const saveBookmark = async (newsId: string) => {
+        try {
+            const updatedBookmarks = bookmarks.includes(newsId)
+                ? bookmarks.filter((id) => id !== newsId) // Remove if exists
+                : [...bookmarks, newsId]; // Add if not exists
+
+            await AsyncStorage.setItem('bookmark', JSON.stringify(updatedBookmarks));
+            setBookmarks(updatedBookmarks); // Update state
+            setBookmark(updatedBookmarks.includes(newsId)); // Update icon
+            alert(
+                updatedBookmarks.includes(newsId)
+                    ? 'News saved to bookmarks!'
+                    : 'News removed from bookmarks!'
+            );
+        } catch (error) {
+            console.error('Failed to toggle bookmark:', error);
+        }
+    };
+
+    const handleBookmarkToggle = async () => {
+        if (selectedNewsId) {
+            await saveBookmark(selectedNewsId);
+        }
+    };
+
+    // Check if the selected news is bookmarked when opening the modal
+    useEffect(() => {
+        if (selectedNewsId) {
+            setBookmark(bookmarks.includes(selectedNewsId));
+        }
+    }, [selectedNewsId, bookmarks]);
 
     return (
         <View style={styles.container}>
@@ -34,7 +83,10 @@ const NewsList = ({ newsList }: Props) => {
                         <TouchableOpacity
                             key={index}
                             style={styles.newsItem}
-                            onPress={() => setSelectedUrl(item.link)} // Open Modal with WebView
+                            onPress={() => {
+                                setSelectedUrl(item.link);
+                                setSelectedNewsId(item.article_id);
+                            }}
                         >
                             <NewsItem item={item} />
                         </TouchableOpacity>
@@ -46,43 +98,41 @@ const NewsList = ({ newsList }: Props) => {
             <Modal visible={!!selectedUrl} animationType="slide" transparent={false}>
                 <SafeAreaView style={styles.modalContainer}>
                     <View style={styles.header}>
-                        <TouchableOpacity
-                            onPress={() => setSelectedUrl(null)} // Close Modal
-                        >
+                        <TouchableOpacity onPress={() => setSelectedUrl(null)}>
                             <Ionicons name="arrow-back" size={24} color={Colors.black} />
                         </TouchableOpacity>
+                        <TouchableOpacity onPress={handleBookmarkToggle}>
+                            <Ionicons
+                                name={bookmark ? 'heart' : 'heart-outline'}
+                                size={24}
+                                color={bookmark ? "red":Colors.black}
+                            />
+                        </TouchableOpacity>
                     </View>
-                    {selectedUrl && (
-                        <WebView source={{ uri: selectedUrl }} style={{ flex: 1 }} />
-                    )}
+                    {selectedUrl && <WebView source={{ uri: selectedUrl }} style={{ flex: 1 }} />}
                 </SafeAreaView>
             </Modal>
         </View>
     );
 };
 
-export const NewsItem = ({ item }: { item: NewsDataType }) => {
-    return (
-        <>
-            <Image source={{ uri: item.image_url }} style={styles.newsImage} />
-            <View style={styles.newsContent}>
-                <Text style={styles.newsCategory}>{item.category}</Text>
-                <Text numberOfLines={2} style={styles.newsTitle}>
-                    {item.title}
-                </Text>
-                <View style={styles.sourceWrapper}>
-                    {item.source_icon && (
-                        <Image
-                            source={{ uri: item.source_icon }}
-                            style={styles.sourceImage}
-                        />
-                    )}
-                    <Text style={styles.newsSource}>{item.source_name}</Text>
-                </View>
+export const NewsItem = ({ item }: { item: NewsDataType }) => (
+    <>
+        <Image source={{ uri: item.image_url }} style={styles.newsImage} />
+        <View style={styles.newsContent}>
+            <Text style={styles.newsCategory}>{item.category}</Text>
+            <Text numberOfLines={2} style={styles.newsTitle}>
+                {item.title}
+            </Text>
+            <View style={styles.sourceWrapper}>
+                {item.source_icon && (
+                    <Image source={{ uri: item.source_icon }} style={styles.sourceImage} />
+                )}
+                <Text style={styles.newsSource}>{item.source_name}</Text>
             </View>
-        </>
-    );
-};
+        </View>
+    </>
+);
 
 export default NewsList;
 
@@ -149,10 +199,10 @@ const styles = StyleSheet.create({
     header: {
         padding: 10,
         flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 18,
         alignItems: 'center',
-
         backgroundColor: Colors.white,
-
         borderBottomWidth: 1,
         borderBottomColor: Colors.darkGrey,
     },

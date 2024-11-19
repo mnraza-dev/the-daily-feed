@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { NewsDataType } from '@/types'
@@ -73,7 +73,7 @@ const Page = (props: Props) => {
                 }}
             />
 
-            <View style={styles.container}>
+            <ScrollView style={styles.container}>
                 {loading ? (<Loading size={"large"} />) : (
                     <View style={styles.listContent}>
                         {news.map((item, index) => (
@@ -104,7 +104,7 @@ const Page = (props: Props) => {
                     </SafeAreaView>
                 </Modal>
 
-            </View>
+            </ScrollView>
 
 
 
