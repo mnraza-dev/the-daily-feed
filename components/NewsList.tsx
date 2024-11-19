@@ -1,5 +1,15 @@
-import { StyleSheet, Text, View, Image, Dimensions } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
+import {
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    TouchableOpacity,
+    Dimensions,
+    Modal,
+    SafeAreaView,
+} from 'react-native';
+import { WebView } from 'react-native-webview';
 import { NewsDataType } from '@/types';
 import { Colors } from '@/constants/Colors';
 import Loading from './Loading';
@@ -7,9 +17,12 @@ import Loading from './Loading';
 type Props = {
     newsList: NewsDataType[];
 };
+
 const { width } = Dimensions.get('screen');
 
 const NewsList = ({ newsList }: Props) => {
+    const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
+
     return (
         <View style={styles.container}>
             {newsList.length === 0 ? (
@@ -17,7 +30,11 @@ const NewsList = ({ newsList }: Props) => {
             ) : (
                 <View style={styles.listContent}>
                     {newsList.map((item, index) => (
-                        <View key={index} style={styles.newsItem}>
+                        <TouchableOpacity
+                            key={index}
+                            style={styles.newsItem}
+                            onPress={() => setSelectedUrl(item.link)} // Open Modal with WebView
+                        >
                             <Image source={{ uri: item.image_url }} style={styles.newsImage} />
                             <View style={styles.newsContent}>
                                 <Text style={styles.newsCategory}>{item.category}</Text>
@@ -34,10 +51,26 @@ const NewsList = ({ newsList }: Props) => {
                                     <Text style={styles.newsSource}>{item.source_name}</Text>
                                 </View>
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     ))}
                 </View>
             )}
+
+            {/* Modal for WebView */}
+            <Modal visible={!!selectedUrl} animationType="slide" transparent={false}>
+                <SafeAreaView style={styles.modalContainer}>
+                    {/* Back Button */}
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => setSelectedUrl(null)} style={styles.backButton}>
+                            <Text style={styles.backButtonText}>Back</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.headerTitle}>News</Text>
+                    </View>
+                    {selectedUrl && (
+                        <WebView source={{ uri: selectedUrl }} style={{ flex: 1 }} />
+                    )}
+                </SafeAreaView>
+            </Modal>
         </View>
     );
 };
@@ -48,8 +81,6 @@ const styles = StyleSheet.create({
     sourceImage: {
         width: 24,
         height: 24,
-        minHeight: 24,
-        minWidth: 24,
         borderRadius: 12,
     },
     newsContent: {
@@ -59,7 +90,6 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 10,
-        padding: 5,
     },
     container: {
         flex: 1,
@@ -102,5 +132,29 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 5,
+    },
+    modalContainer: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        backgroundColor: Colors.tint,
+    },
+    backButton: {
+        marginRight: 16,
+        padding: 8,
+    },
+    backButtonText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+    headerTitle: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: '600',
     },
 });

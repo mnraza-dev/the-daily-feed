@@ -50,7 +50,7 @@ const Page = (props: Props) => {
       if (response && response.data) {
         setNews(response.data.results);
         setLoading(false);
-        console.log(response.data);
+        // console.log(response.data);
       }
     }
     catch (err: any) {
@@ -59,7 +59,7 @@ const Page = (props: Props) => {
   }
 
   const onCatChanged = (category: string) => {
-    console.log('Category', category);
+    // console.log('Category', category);
     setNews([]);
     getNews(category);
 
@@ -68,7 +68,7 @@ const Page = (props: Props) => {
     <ScrollView style={[styles.container, { paddingTop: safeTop }]}>
 
       <Header />
-      <SearchBar />
+      <SearchBar withHorizontalPadding={true} />
       {
         loading ? (<Loading size={'large'} />) :
           (<BreakingNews newsList={breakingNews} />)
