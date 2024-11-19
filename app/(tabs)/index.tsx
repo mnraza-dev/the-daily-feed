@@ -41,7 +41,7 @@ const Page = (props: Props) => {
   }
   const getNews = async (category: string = '') => {
     try {
-      let categoryString = 'politics';
+      let categoryString = '';
       if (category.length !== 0) {
         categoryString = `&category=${category}`;
       }

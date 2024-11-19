@@ -4,10 +4,11 @@ import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors'
 
 type Props = {
-  withHorizontalPadding: boolean
+  withHorizontalPadding: boolean,
+  setSearchQuery: Function
 }
 
-const SearchBar = ({ withHorizontalPadding }: Props) => {
+const SearchBar = ({ withHorizontalPadding, setSearchQuery }: Props) => {
   return (
     <View style={[styles.container, withHorizontalPadding && { paddingHorizontal: 20 }]}>
       <View style={styles.searchbar}>
@@ -16,7 +17,9 @@ const SearchBar = ({ withHorizontalPadding }: Props) => {
         <TextInput
           style={styles.searchTxt}
           placeholder='Search'
-          placeholderTextColor={Colors.lightGrey} autoCapitalize='none' />
+          placeholderTextColor={Colors.lightGrey} 
+         onChangeText={query => setSearchQuery(query)}
+         autoCapitalize='none' />
       </View>
     </View>
   )

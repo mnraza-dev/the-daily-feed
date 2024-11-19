@@ -13,6 +13,7 @@ import { WebView } from 'react-native-webview';
 import { NewsDataType } from '@/types';
 import { Colors } from '@/constants/Colors';
 import Loading from './Loading';
+import { Ionicons } from '@expo/vector-icons';
 
 type Props = {
     newsList: NewsDataType[];
@@ -59,13 +60,12 @@ const NewsList = ({ newsList }: Props) => {
             {/* Modal for WebView */}
             <Modal visible={!!selectedUrl} animationType="slide" transparent={false}>
                 <SafeAreaView style={styles.modalContainer}>
-                    {/* Back Button */}
-                    <View style={styles.header}>
-                        <TouchableOpacity onPress={() => setSelectedUrl(null)} style={styles.backButton}>
-                            <Text style={styles.backButtonText}>Back</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.headerTitle}>News</Text>
-                    </View>
+                    <TouchableOpacity
+                        style={styles.closeButton}
+                        onPress={() => setSelectedUrl(null)} // Close Modal
+                    >
+                        <Ionicons style={styles.closeIcon} name='backspace-outline' size={24} color={Colors.black} />
+                    </TouchableOpacity>
                     {selectedUrl && (
                         <WebView source={{ uri: selectedUrl }} style={{ flex: 1 }} />
                     )}
@@ -78,6 +78,12 @@ const NewsList = ({ newsList }: Props) => {
 export default NewsList;
 
 const styles = StyleSheet.create({
+    closeIcon: {
+        backgroundColor: Colors.lightGrey,
+        borderRadius: 20,
+        color: Colors.white,
+        padding: 8
+    },
     sourceImage: {
         width: 24,
         height: 24,
@@ -134,27 +140,20 @@ const styles = StyleSheet.create({
         gap: 5,
     },
     modalContainer: {
+
         flex: 1,
         backgroundColor: '#fff',
     },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        backgroundColor: Colors.tint,
+    closeButton: {
+        padding: 10,
+        alignItems: 'flex-end',
+        marginHorizontal: 16,
+        marginVertical: 10,
+        borderRadius: 8,
     },
-    backButton: {
-        marginRight: 16,
-        padding: 8,
-    },
-    backButtonText: {
+    closeButtonText: {
         color: '#fff',
-        fontSize: 16,
-    },
-    headerTitle: {
-        color: '#fff',
-        fontSize: 18,
         fontWeight: '600',
+        fontSize: 16,
     },
 });
