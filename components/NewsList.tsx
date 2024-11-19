@@ -36,22 +36,7 @@ const NewsList = ({ newsList }: Props) => {
                             style={styles.newsItem}
                             onPress={() => setSelectedUrl(item.link)} // Open Modal with WebView
                         >
-                            <Image source={{ uri: item.image_url }} style={styles.newsImage} />
-                            <View style={styles.newsContent}>
-                                <Text style={styles.newsCategory}>{item.category}</Text>
-                                <Text numberOfLines={2} style={styles.newsTitle}>
-                                    {item.title}
-                                </Text>
-                                <View style={styles.sourceWrapper}>
-                                    {item.source_icon && (
-                                        <Image
-                                            source={{ uri: item.source_icon }}
-                                            style={styles.sourceImage}
-                                        />
-                                    )}
-                                    <Text style={styles.newsSource}>{item.source_name}</Text>
-                                </View>
-                            </View>
+                            <NewsItem item={item} />
                         </TouchableOpacity>
                     ))}
                 </View>
@@ -60,12 +45,13 @@ const NewsList = ({ newsList }: Props) => {
             {/* Modal for WebView */}
             <Modal visible={!!selectedUrl} animationType="slide" transparent={false}>
                 <SafeAreaView style={styles.modalContainer}>
-                    <TouchableOpacity
-                        style={styles.closeButton}
-                        onPress={() => setSelectedUrl(null)} // Close Modal
-                    >
-                        <Ionicons style={styles.closeIcon} name='backspace-outline' size={24} color={Colors.black} />
-                    </TouchableOpacity>
+                    <View style={styles.header}>
+                        <TouchableOpacity
+                            onPress={() => setSelectedUrl(null)} // Close Modal
+                        >
+                            <Ionicons name="arrow-back" size={24} color={Colors.black} />
+                        </TouchableOpacity>
+                    </View>
                     {selectedUrl && (
                         <WebView source={{ uri: selectedUrl }} style={{ flex: 1 }} />
                     )}
@@ -75,15 +61,32 @@ const NewsList = ({ newsList }: Props) => {
     );
 };
 
+export const NewsItem = ({ item }: { item: NewsDataType }) => {
+    return (
+        <>
+            <Image source={{ uri: item.image_url }} style={styles.newsImage} />
+            <View style={styles.newsContent}>
+                <Text style={styles.newsCategory}>{item.category}</Text>
+                <Text numberOfLines={2} style={styles.newsTitle}>
+                    {item.title}
+                </Text>
+                <View style={styles.sourceWrapper}>
+                    {item.source_icon && (
+                        <Image
+                            source={{ uri: item.source_icon }}
+                            style={styles.sourceImage}
+                        />
+                    )}
+                    <Text style={styles.newsSource}>{item.source_name}</Text>
+                </View>
+            </View>
+        </>
+    );
+};
+
 export default NewsList;
 
 const styles = StyleSheet.create({
-    closeIcon: {
-        backgroundColor: Colors.lightGrey,
-        borderRadius: 20,
-        color: Colors.white,
-        padding: 8
-    },
     sourceImage: {
         width: 24,
         height: 24,
@@ -140,20 +143,17 @@ const styles = StyleSheet.create({
         gap: 5,
     },
     modalContainer: {
-
         flex: 1,
         backgroundColor: '#fff',
     },
-    closeButton: {
+    header: {
         padding: 10,
-        alignItems: 'flex-end',
-        marginHorizontal: 16,
-        marginVertical: 10,
-        borderRadius: 8,
-    },
-    closeButtonText: {
-        color: '#fff',
-        fontWeight: '600',
-        fontSize: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+
+        backgroundColor: Colors.white,
+
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.darkGrey,
     },
 });

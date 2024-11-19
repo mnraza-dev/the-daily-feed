@@ -8,10 +8,7 @@ import CheckBox from '@/components/CheckBox'
 import { useNewsCategories } from '@/hooks/useNewsCategories'
 import { useNewsCountries } from '@/hooks/useNewsCountries'
 import { Link } from 'expo-router'
-
-
 type Props = {}
-
 const Page = (props: Props) => {
   const { top: safeTop } = useSafeAreaInsets();
   const { newsCategories, toggleNewsCategory } = useNewsCategories();
@@ -62,7 +59,7 @@ const Page = (props: Props) => {
       <Link href={{
         pathname: `/news/search`,
         params: { query: searchQuery, category, country }
-      }}>
+      }} asChild>
         <TouchableOpacity style={styles.SearchBtn} onPress={() => { }}>
           <Text style={styles.BtnText}>
             Search
