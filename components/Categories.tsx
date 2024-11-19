@@ -3,19 +3,19 @@ import React, { useRef, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import newsCategoryList from '@/constants/Categories';
 
-type Props = {};
+type Props = {
+    onCategoryChanged: (category: string) => void
+};
 
-// Get device screen width
 const { width } = Dimensions.get('window');
 
-const Categories = (props: Props) => {
+const Categories = ({ onCategoryChanged }: Props) => {
     const scrollRef = useRef<ScrollView>(null);
     const itemRef = useRef<(View | null)[]>([]); // Ref typed as View for measure access
     const [activeIndex, setActiveIndex] = useState<number>(0);
 
     const handleSelectCategory = (index: number) => {
         const selected = itemRef.current[index];
-
         setActiveIndex(index);
         if (selected) {
             (selected as View).measure(
@@ -31,10 +31,12 @@ const Categories = (props: Props) => {
                 }
             );
         }
+        onCategoryChanged(newsCategoryList[index].slug)
     };
 
+
     return (
-        <View style={styles.container}>
+        <View>
             <Text style={styles.title}>Trending Right Now</Text>
             <ScrollView
                 ref={scrollRef}
@@ -70,10 +72,7 @@ const Categories = (props: Props) => {
 export default Categories;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.white,
-    },
+
     title: {
         fontSize: 24,
         fontWeight: '600',
